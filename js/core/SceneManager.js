@@ -233,7 +233,7 @@ export class SceneManager {
         const deltaX = event.clientX - this.lastMouseX;
         const deltaY = event.clientY - this.lastMouseY;
 
-        this.targetRotationY -= deltaX * SCENE_CONFIG.rotation.speed;
+        this.targetRotationY += deltaX * SCENE_CONFIG.rotation.speed;
 
         this.lastMouseX = event.clientX;
         this.lastMouseY = event.clientY;
@@ -265,7 +265,7 @@ export class SceneManager {
         event.preventDefault();
 
         const deltaX = event.touches[0].clientX - this.lastMouseX;
-        this.targetRotationY -= deltaX * SCENE_CONFIG.rotation.speed;
+        this.targetRotationY += deltaX * SCENE_CONFIG.rotation.speed;
 
         this.lastMouseX = event.touches[0].clientX;
         this.lastMouseY = event.touches[0].clientY;

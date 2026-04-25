@@ -13,6 +13,13 @@ export class Character {
             pants: null,
             shoes: null
         };
+        this.currentStyles = {
+            hat: 'none',
+            glasses: 'none',
+            top: 'tshirt',
+            pants: 'jeans',
+            shoes: 'sneaker'
+        };
         this.clothingColors = {
             hat: '#000000',
             glasses: '#000000',
@@ -308,6 +315,7 @@ export class Character {
     }
 
     createTop(style, color) {
+        this.currentStyles.top = style;
         if (this.clothing.top) {
             this.chestJoint.remove(this.clothing.top);
         }
@@ -359,39 +367,27 @@ export class Character {
                 break;
 
             case 'shirt':
+                this.createShirtStyle(topGroup, material, clothingOffset);
+                break;
+
             case 'hoodie':
+                this.createHoodieStyle(topGroup, material, clothingOffset);
+                break;
+
             case 'jacket':
+                this.createJacketStyle(topGroup, material, clothingOffset);
+                break;
+
             case 'suit':
+                this.createSuitStyle(topGroup, material, clothingOffset);
+                break;
+
             case 'sweater':
+                this.createSweaterStyle(topGroup, material, clothingOffset);
+                break;
+
             case 'polo':
-                const shirtGeometry = new THREE.CylinderGeometry(
-                    this.config.torsoWidth * 0.53 + clothingOffset,
-                    this.config.torsoWidth * 0.5 + clothingOffset,
-                    this.config.torsoHeight * 0.7,
-                    16
-                );
-                const shirt = new THREE.Mesh(shirtGeometry, material);
-                shirt.position.y = this.config.torsoHeight * 0.3;
-                shirt.castShadow = true;
-                topGroup.add(shirt);
-
-                const longSleeveGeometry = new THREE.CylinderGeometry(
-                    this.config.armRadius + clothingOffset * 2,
-                    this.config.armRadius + clothingOffset,
-                    this.config.armLength * 0.7,
-                    8
-                );
-                const leftLongSleeve = new THREE.Mesh(longSleeveGeometry, material);
-                leftLongSleeve.position.set(-this.config.torsoWidth * 0.55, this.config.torsoHeight * 0.4, 0);
-                leftLongSleeve.rotation.z = Math.PI * 0.1;
-                leftLongSleeve.castShadow = true;
-                topGroup.add(leftLongSleeve);
-
-                const rightLongSleeve = new THREE.Mesh(longSleeveGeometry, material);
-                rightLongSleeve.position.set(this.config.torsoWidth * 0.55, this.config.torsoHeight * 0.4, 0);
-                rightLongSleeve.rotation.z = -Math.PI * 0.1;
-                rightLongSleeve.castShadow = true;
-                topGroup.add(rightLongSleeve);
+                this.createPoloStyle(topGroup, material, clothingOffset);
                 break;
         }
 
@@ -400,7 +396,462 @@ export class Character {
         this.chestJoint.add(topGroup);
     }
 
+    createShirtStyle(topGroup, material, clothingOffset) {
+        const shirtGeometry = new THREE.CylinderGeometry(
+            this.config.torsoWidth * 0.52 + clothingOffset,
+            this.config.torsoWidth * 0.48 + clothingOffset,
+            this.config.torsoHeight * 0.72,
+            16
+        );
+        const shirt = new THREE.Mesh(shirtGeometry, material);
+        shirt.position.y = this.config.torsoHeight * 0.3;
+        shirt.castShadow = true;
+        topGroup.add(shirt);
+
+        const collarGeometry = new THREE.CylinderGeometry(
+            this.config.torsoWidth * 0.35 + clothingOffset,
+            this.config.torsoWidth * 0.3 + clothingOffset,
+            0.08,
+            8
+        );
+        const collar = new THREE.Mesh(collarGeometry, material);
+        collar.position.y = this.config.torsoHeight * 0.65;
+        collar.castShadow = true;
+        topGroup.add(collar);
+
+        const leftCollar = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.02, 0.08), material);
+        leftCollar.position.set(-0.08, this.config.torsoHeight * 0.66, 0.06);
+        leftCollar.rotation.z = 0.3;
+        topGroup.add(leftCollar);
+
+        const rightCollar = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.02, 0.08), material);
+        rightCollar.position.set(0.08, this.config.torsoHeight * 0.66, 0.06);
+        rightCollar.rotation.z = -0.3;
+        topGroup.add(rightCollar);
+
+        const longSleeveGeometry = new THREE.CylinderGeometry(
+            this.config.armRadius + clothingOffset * 1.5,
+            this.config.armRadius + clothingOffset,
+            this.config.armLength * 0.65,
+            8
+        );
+        const leftLongSleeve = new THREE.Mesh(longSleeveGeometry, material);
+        leftLongSleeve.position.set(-this.config.torsoWidth * 0.55, this.config.torsoHeight * 0.4, 0);
+        leftLongSleeve.rotation.z = Math.PI * 0.1;
+        leftLongSleeve.castShadow = true;
+        topGroup.add(leftLongSleeve);
+
+        const rightLongSleeve = new THREE.Mesh(longSleeveGeometry, material);
+        rightLongSleeve.position.set(this.config.torsoWidth * 0.55, this.config.torsoHeight * 0.4, 0);
+        rightLongSleeve.rotation.z = -Math.PI * 0.1;
+        rightLongSleeve.castShadow = true;
+        topGroup.add(rightLongSleeve);
+    }
+
+    createHoodieStyle(topGroup, material, clothingOffset) {
+        const hoodieGeometry = new THREE.CylinderGeometry(
+            this.config.torsoWidth * 0.58 + clothingOffset,
+            this.config.torsoWidth * 0.55 + clothingOffset,
+            this.config.torsoHeight * 0.75,
+            16
+        );
+        const hoodie = new THREE.Mesh(hoodieGeometry, material);
+        hoodie.position.y = this.config.torsoHeight * 0.28;
+        hoodie.castShadow = true;
+        topGroup.add(hoodie);
+
+        const hoodGroup = new THREE.Group();
+        const hoodGeometry = new THREE.SphereGeometry(
+            this.config.headRadius * 0.95,
+            16, 12, 0, Math.PI * 2, 0, Math.PI / 2
+        );
+        const hood = new THREE.Mesh(hoodGeometry, material);
+        hood.position.y = this.config.torsoHeight * 0.78;
+        hood.position.z = -0.05;
+        hood.castShadow = true;
+        hoodGroup.add(hood);
+
+        const hoodBackGeometry = new THREE.SphereGeometry(
+            this.config.headRadius * 0.8,
+            16, 12, 0, Math.PI, Math.PI / 2, Math.PI / 2
+        );
+        const hoodBack = new THREE.Mesh(hoodBackGeometry, material);
+        hoodBack.position.y = this.config.torsoHeight * 0.75;
+        hoodBack.position.z = -0.08;
+        hoodBack.castShadow = true;
+        hoodGroup.add(hoodBack);
+        topGroup.add(hoodGroup);
+
+        const pocketGeometry = new THREE.BoxGeometry(
+            this.config.torsoWidth * 0.6,
+            this.config.torsoHeight * 0.18,
+            0.03 + clothingOffset
+        );
+        const pocket = new THREE.Mesh(pocketGeometry, material);
+        pocket.position.y = this.config.torsoHeight * 0.15;
+        pocket.position.z = this.config.torsoWidth * 0.52;
+        pocket.castShadow = true;
+        topGroup.add(pocket);
+
+        const drawstringMaterial = new THREE.MeshStandardMaterial({
+            color: 0x333333,
+            roughness: 0.8
+        });
+        const drawstringGeometry = new THREE.CylinderGeometry(0.008, 0.008, 0.25, 8);
+        const leftDrawstring = new THREE.Mesh(drawstringGeometry, drawstringMaterial);
+        leftDrawstring.position.set(-0.06, this.config.torsoHeight * 0.55, this.config.torsoWidth * 0.55);
+        topGroup.add(leftDrawstring);
+
+        const rightDrawstring = new THREE.Mesh(drawstringGeometry, drawstringMaterial);
+        rightDrawstring.position.set(0.06, this.config.torsoHeight * 0.55, this.config.torsoWidth * 0.55);
+        topGroup.add(rightDrawstring);
+
+        const longSleeveGeometry = new THREE.CylinderGeometry(
+            this.config.armRadius + clothingOffset * 2,
+            this.config.armRadius + clothingOffset * 1.5,
+            this.config.armLength * 0.68,
+            8
+        );
+        const leftLongSleeve = new THREE.Mesh(longSleeveGeometry, material);
+        leftLongSleeve.position.set(-this.config.torsoWidth * 0.58, this.config.torsoHeight * 0.38, 0);
+        leftLongSleeve.rotation.z = Math.PI * 0.1;
+        leftLongSleeve.castShadow = true;
+        topGroup.add(leftLongSleeve);
+
+        const rightLongSleeve = new THREE.Mesh(longSleeveGeometry, material);
+        rightLongSleeve.position.set(this.config.torsoWidth * 0.58, this.config.torsoHeight * 0.38, 0);
+        rightLongSleeve.rotation.z = -Math.PI * 0.1;
+        rightLongSleeve.castShadow = true;
+        topGroup.add(rightLongSleeve);
+    }
+
+    createJacketStyle(topGroup, material, clothingOffset) {
+        const jacketGeometry = new THREE.CylinderGeometry(
+            this.config.torsoWidth * 0.56 + clothingOffset,
+            this.config.torsoWidth * 0.52 + clothingOffset,
+            this.config.torsoHeight * 0.7,
+            16
+        );
+        const jacket = new THREE.Mesh(jacketGeometry, material);
+        jacket.position.y = this.config.torsoHeight * 0.3;
+        jacket.castShadow = true;
+        topGroup.add(jacket);
+
+        const lapelMaterial = new THREE.MeshStandardMaterial({
+            color: material.color.clone().multiplyScalar(0.85),
+            roughness: material.roughness,
+            metalness: material.metalness
+        });
+        const leftLapel = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.25, 0.03), lapelMaterial);
+        leftLapel.position.set(-0.03, this.config.torsoHeight * 0.5, this.config.torsoWidth * 0.53);
+        leftLapel.rotation.z = -0.3;
+        topGroup.add(leftLapel);
+
+        const rightLapel = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.25, 0.03), lapelMaterial);
+        rightLapel.position.set(0.03, this.config.torsoHeight * 0.5, this.config.torsoWidth * 0.53);
+        rightLapel.rotation.z = 0.3;
+        topGroup.add(rightLapel);
+
+        const buttonMaterial = new THREE.MeshStandardMaterial({
+            color: 0x222222,
+            roughness: 0.5,
+            metalness: 0.5
+        });
+        for (let i = 0; i < 3; i++) {
+            const button = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.012, 0.012, 0.01, 12),
+                buttonMaterial
+            );
+            button.position.set(0, this.config.torsoHeight * (0.5 - i * 0.15), this.config.torsoWidth * 0.54);
+            button.rotation.x = Math.PI / 2;
+            topGroup.add(button);
+        }
+
+        const pocketGeometry = new THREE.BoxGeometry(0.1, 0.08, 0.02);
+        const leftPocket = new THREE.Mesh(pocketGeometry, material);
+        leftPocket.position.set(-this.config.torsoWidth * 0.35, this.config.torsoHeight * 0.3, this.config.torsoWidth * 0.53);
+        topGroup.add(leftPocket);
+
+        const rightPocket = new THREE.Mesh(pocketGeometry, material);
+        rightPocket.position.set(this.config.torsoWidth * 0.35, this.config.torsoHeight * 0.3, this.config.torsoWidth * 0.53);
+        topGroup.add(rightPocket);
+
+        const longSleeveGeometry = new THREE.CylinderGeometry(
+            this.config.armRadius + clothingOffset * 1.8,
+            this.config.armRadius + clothingOffset,
+            this.config.armLength * 0.65,
+            8
+        );
+        const leftLongSleeve = new THREE.Mesh(longSleeveGeometry, material);
+        leftLongSleeve.position.set(-this.config.torsoWidth * 0.56, this.config.torsoHeight * 0.4, 0);
+        leftLongSleeve.rotation.z = Math.PI * 0.1;
+        leftLongSleeve.castShadow = true;
+        topGroup.add(leftLongSleeve);
+
+        const rightLongSleeve = new THREE.Mesh(longSleeveGeometry, material);
+        rightLongSleeve.position.set(this.config.torsoWidth * 0.56, this.config.torsoHeight * 0.4, 0);
+        rightLongSleeve.rotation.z = -Math.PI * 0.1;
+        rightLongSleeve.castShadow = true;
+        topGroup.add(rightLongSleeve);
+    }
+
+    createSuitStyle(topGroup, material, clothingOffset) {
+        const suitGeometry = new THREE.CylinderGeometry(
+            this.config.torsoWidth * 0.54 + clothingOffset,
+            this.config.torsoWidth * 0.5 + clothingOffset,
+            this.config.torsoHeight * 0.68,
+            16
+        );
+        const suit = new THREE.Mesh(suitGeometry, material);
+        suit.position.y = this.config.torsoHeight * 0.32;
+        suit.castShadow = true;
+        topGroup.add(suit);
+
+        const shoulderGeometry = new THREE.BoxGeometry(
+            this.config.torsoWidth * 1.3,
+            0.03,
+            this.config.torsoWidth * 0.6
+        );
+        const shoulder = new THREE.Mesh(shoulderGeometry, material);
+        shoulder.position.y = this.config.torsoHeight * 0.63;
+        shoulder.position.z = 0.02;
+        shoulder.castShadow = true;
+        topGroup.add(shoulder);
+
+        const lapelMaterial = new THREE.MeshStandardMaterial({
+            color: material.color.clone().multiplyScalar(0.8),
+            roughness: 0.4,
+            metalness: 0.1
+        });
+        const leftLapel = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.3, 0.025), lapelMaterial);
+        leftLapel.position.set(-0.05, this.config.torsoHeight * 0.48, this.config.torsoWidth * 0.52);
+        leftLapel.rotation.z = -0.35;
+        topGroup.add(leftLapel);
+
+        const rightLapel = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.3, 0.025), lapelMaterial);
+        rightLapel.position.set(0.05, this.config.torsoHeight * 0.48, this.config.torsoWidth * 0.52);
+        rightLapel.rotation.z = 0.35;
+        topGroup.add(rightLapel);
+
+        const buttonMaterial = new THREE.MeshStandardMaterial({
+            color: 0x1a1a1a,
+            roughness: 0.3,
+            metalness: 0.7
+        });
+        for (let i = 0; i < 2; i++) {
+            const button = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.015, 0.015, 0.012, 16),
+                buttonMaterial
+            );
+            button.position.set(0, this.config.torsoHeight * (0.52 - i * 0.18), this.config.torsoWidth * 0.53);
+            button.rotation.x = Math.PI / 2;
+            topGroup.add(button);
+        }
+
+        const breastPocket = new THREE.Mesh(
+            new THREE.BoxGeometry(0.12, 0.06, 0.015),
+            lapelMaterial
+        );
+        breastPocket.position.set(-this.config.torsoWidth * 0.35, this.config.torsoHeight * 0.48, this.config.torsoWidth * 0.52);
+        topGroup.add(breastPocket);
+
+        const longSleeveGeometry = new THREE.CylinderGeometry(
+            this.config.armRadius + clothingOffset * 1.5,
+            this.config.armRadius + clothingOffset * 0.8,
+            this.config.armLength * 0.63,
+            8
+        );
+        const leftLongSleeve = new THREE.Mesh(longSleeveGeometry, material);
+        leftLongSleeve.position.set(-this.config.torsoWidth * 0.54, this.config.torsoHeight * 0.42, 0);
+        leftLongSleeve.rotation.z = Math.PI * 0.08;
+        leftLongSleeve.castShadow = true;
+        topGroup.add(leftLongSleeve);
+
+        const rightLongSleeve = new THREE.Mesh(longSleeveGeometry, material);
+        rightLongSleeve.position.set(this.config.torsoWidth * 0.54, this.config.torsoHeight * 0.42, 0);
+        rightLongSleeve.rotation.z = -Math.PI * 0.08;
+        rightLongSleeve.castShadow = true;
+        topGroup.add(rightLongSleeve);
+
+        const cuffMaterial = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            roughness: 0.6
+        });
+        const leftCuff = new THREE.Mesh(
+            new THREE.CylinderGeometry(this.config.armRadius + clothingOffset, this.config.armRadius + clothingOffset, 0.04, 8),
+            cuffMaterial
+        );
+        leftCuff.position.set(-this.config.torsoWidth * 0.54, this.config.torsoHeight * 0.15, 0);
+        topGroup.add(leftCuff);
+
+        const rightCuff = new THREE.Mesh(
+            new THREE.CylinderGeometry(this.config.armRadius + clothingOffset, this.config.armRadius + clothingOffset, 0.04, 8),
+            cuffMaterial
+        );
+        rightCuff.position.set(this.config.torsoWidth * 0.54, this.config.torsoHeight * 0.15, 0);
+        topGroup.add(rightCuff);
+    }
+
+    createSweaterStyle(topGroup, material, clothingOffset) {
+        const sweaterGeometry = new THREE.CylinderGeometry(
+            this.config.torsoWidth * 0.57 + clothingOffset,
+            this.config.torsoWidth * 0.54 + clothingOffset,
+            this.config.torsoHeight * 0.73,
+            16
+        );
+        const sweater = new THREE.Mesh(sweaterGeometry, material);
+        sweater.position.y = this.config.torsoHeight * 0.29;
+        sweater.castShadow = true;
+        topGroup.add(sweater);
+
+        const neckGeometry = new THREE.CylinderGeometry(
+            this.config.torsoWidth * 0.32 + clothingOffset,
+            this.config.torsoWidth * 0.28 + clothingOffset,
+            0.1,
+            8
+        );
+        const neck = new THREE.Mesh(neckGeometry, material);
+        neck.position.y = this.config.torsoHeight * 0.63;
+        neck.castShadow = true;
+        topGroup.add(neck);
+
+        const ribMaterial = new THREE.MeshStandardMaterial({
+            color: material.color.clone().multiplyScalar(0.92),
+            roughness: 0.85
+        });
+        const bottomRib = new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                this.config.torsoWidth * 0.54 + clothingOffset,
+                this.config.torsoWidth * 0.53 + clothingOffset,
+                0.06,
+                16
+            ),
+            ribMaterial
+        );
+        bottomRib.position.y = -this.config.torsoHeight * 0.05;
+        bottomRib.castShadow = true;
+        topGroup.add(bottomRib);
+
+        const longSleeveGeometry = new THREE.CylinderGeometry(
+            this.config.armRadius + clothingOffset * 2,
+            this.config.armRadius + clothingOffset * 1.5,
+            this.config.armLength * 0.7,
+            8
+        );
+        const leftLongSleeve = new THREE.Mesh(longSleeveGeometry, material);
+        leftLongSleeve.position.set(-this.config.torsoWidth * 0.57, this.config.torsoHeight * 0.38, 0);
+        leftLongSleeve.rotation.z = Math.PI * 0.1;
+        leftLongSleeve.castShadow = true;
+        topGroup.add(leftLongSleeve);
+
+        const rightLongSleeve = new THREE.Mesh(longSleeveGeometry, material);
+        rightLongSleeve.position.set(this.config.torsoWidth * 0.57, this.config.torsoHeight * 0.38, 0);
+        rightLongSleeve.rotation.z = -Math.PI * 0.1;
+        rightLongSleeve.castShadow = true;
+        topGroup.add(rightLongSleeve);
+
+        const leftCuff = new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                this.config.armRadius + clothingOffset * 1.5,
+                this.config.armRadius + clothingOffset,
+                0.06,
+                8
+            ),
+            ribMaterial
+        );
+        leftCuff.position.set(-this.config.torsoWidth * 0.57, this.config.torsoHeight * 0.12, 0);
+        topGroup.add(leftCuff);
+
+        const rightCuff = new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                this.config.armRadius + clothingOffset * 1.5,
+                this.config.armRadius + clothingOffset,
+                0.06,
+                8
+            ),
+            ribMaterial
+        );
+        rightCuff.position.set(this.config.torsoWidth * 0.57, this.config.torsoHeight * 0.12, 0);
+        topGroup.add(rightCuff);
+    }
+
+    createPoloStyle(topGroup, material, clothingOffset) {
+        const poloGeometry = new THREE.CylinderGeometry(
+            this.config.torsoWidth * 0.52 + clothingOffset,
+            this.config.torsoWidth * 0.5 + clothingOffset,
+            this.config.torsoHeight * 0.68,
+            16
+        );
+        const polo = new THREE.Mesh(poloGeometry, material);
+        polo.position.y = this.config.torsoHeight * 0.32;
+        polo.castShadow = true;
+        topGroup.add(polo);
+
+        const collarGeometry = new THREE.CylinderGeometry(
+            this.config.torsoWidth * 0.35 + clothingOffset,
+            this.config.torsoWidth * 0.3 + clothingOffset,
+            0.08,
+            8
+        );
+        const collar = new THREE.Mesh(collarGeometry, material);
+        collar.position.y = this.config.torsoHeight * 0.64;
+        collar.castShadow = true;
+        topGroup.add(collar);
+
+        const leftCollarPoint = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.02, 0.07), material);
+        leftCollarPoint.position.set(-0.07, this.config.torsoHeight * 0.65, 0.05);
+        leftCollarPoint.rotation.z = 0.4;
+        topGroup.add(leftCollarPoint);
+
+        const rightCollarPoint = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.02, 0.07), material);
+        rightCollarPoint.position.set(0.07, this.config.torsoHeight * 0.65, 0.05);
+        rightCollarPoint.rotation.z = -0.4;
+        topGroup.add(rightCollarPoint);
+
+        const placketMaterial = new THREE.MeshStandardMaterial({
+            color: material.color.clone().multiplyScalar(0.95),
+            roughness: material.roughness
+        });
+        const placket = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.18, 0.02), placketMaterial);
+        placket.position.set(0, this.config.torsoHeight * 0.5, this.config.torsoWidth * 0.52);
+        topGroup.add(placket);
+
+        const buttonMaterial = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            roughness: 0.5,
+            metalness: 0.3
+        });
+        for (let i = 0; i < 2; i++) {
+            const button = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.008, 0.008, 0.01, 12),
+                buttonMaterial
+            );
+            button.position.set(0, this.config.torsoHeight * (0.58 - i * 0.08), this.config.torsoWidth * 0.53);
+            button.rotation.x = Math.PI / 2;
+            topGroup.add(button);
+        }
+
+        const shortSleeveGeometry = new THREE.CylinderGeometry(
+            this.config.armRadius + clothingOffset * 1.5,
+            this.config.armRadius + clothingOffset,
+            this.config.armLength * 0.35,
+            8
+        );
+        const leftShortSleeve = new THREE.Mesh(shortSleeveGeometry, material);
+        leftShortSleeve.position.set(-this.config.torsoWidth * 0.55, this.config.torsoHeight * 0.52, 0);
+        leftShortSleeve.rotation.z = Math.PI * 0.15;
+        leftShortSleeve.castShadow = true;
+        topGroup.add(leftShortSleeve);
+
+        const rightShortSleeve = new THREE.Mesh(shortSleeveGeometry, material);
+        rightShortSleeve.position.set(this.config.torsoWidth * 0.55, this.config.torsoHeight * 0.52, 0);
+        rightShortSleeve.rotation.z = -Math.PI * 0.15;
+        rightShortSleeve.castShadow = true;
+        topGroup.add(rightShortSleeve);
+    }
+
     createPants(style, color) {
+        this.currentStyles.pants = style;
         if (this.clothing.pants) {
             this.hipJoint.remove(this.clothing.pants);
         }
@@ -454,6 +905,7 @@ export class Character {
     }
 
     createShoes(style, color) {
+        this.currentStyles.shoes = style;
         if (this.clothing.shoes) {
             this.hipJoint.remove(this.clothing.shoes);
         }
@@ -463,74 +915,637 @@ export class Character {
             return;
         }
 
-        const material = new THREE.MeshStandardMaterial({
-            color: color,
-            roughness: style === 'leather' ? 0.4 : 0.8,
-            metalness: style === 'leather' ? 0.3 : 0.1
-        });
-
         let shoesGroup = new THREE.Group();
 
-        const soleMaterial = new THREE.MeshStandardMaterial({
-            color: 0x333333,
-            roughness: 0.9,
-            metalness: 0.1
-        });
-
-        const soleGeometry = new THREE.BoxGeometry(
-            this.config.footLength * 0.5,
-            0.03,
-            this.config.footLength
-        );
-
-        const shoeGeometry = new THREE.BoxGeometry(
-            this.config.footLength * 0.48,
-            this.config.footHeight,
-            this.config.footLength * 0.9
-        );
-
-        const leftSole = new THREE.Mesh(soleGeometry, soleMaterial);
-        leftSole.position.set(
-            -this.config.torsoWidth * 0.25,
-            -this.config.legLength - this.config.footHeight - 0.015,
-            this.config.footLength * 0.2
-        );
-        leftSole.castShadow = true;
-        shoesGroup.add(leftSole);
-
-        const leftShoe = new THREE.Mesh(shoeGeometry, material);
-        leftShoe.position.set(
-            -this.config.torsoWidth * 0.25,
-            -this.config.legLength - this.config.footHeight / 2,
-            this.config.footLength * 0.2
-        );
-        leftShoe.castShadow = true;
-        shoesGroup.add(leftShoe);
-
-        const rightSole = new THREE.Mesh(soleGeometry, soleMaterial);
-        rightSole.position.set(
-            this.config.torsoWidth * 0.25,
-            -this.config.legLength - this.config.footHeight - 0.015,
-            this.config.footLength * 0.2
-        );
-        rightSole.castShadow = true;
-        shoesGroup.add(rightSole);
-
-        const rightShoe = new THREE.Mesh(shoeGeometry, material);
-        rightShoe.position.set(
-            this.config.torsoWidth * 0.25,
-            -this.config.legLength - this.config.footHeight / 2,
-            this.config.footLength * 0.2
-        );
-        rightShoe.castShadow = true;
-        shoesGroup.add(rightShoe);
+        switch (style) {
+            case 'sneaker':
+                this.createSneakerStyle(shoesGroup, color);
+                break;
+            case 'leather':
+                this.createLeatherShoeStyle(shoesGroup, color);
+                break;
+            case 'boots':
+                this.createBootsStyle(shoesGroup, color);
+                break;
+            case 'casual':
+                this.createCasualShoeStyle(shoesGroup, color);
+                break;
+            case 'sandal':
+                this.createSandalStyle(shoesGroup, color);
+                break;
+            case 'loafer':
+                this.createLoaferStyle(shoesGroup, color);
+                break;
+            case 'canvas':
+                this.createCanvasShoeStyle(shoesGroup, color);
+                break;
+            default:
+                this.createSneakerStyle(shoesGroup, color);
+                break;
+        }
 
         this.clothing.shoes = shoesGroup;
         this.clothingColors.shoes = color;
         this.hipJoint.add(shoesGroup);
     }
 
+    createSneakerStyle(shoesGroup, color) {
+        const shoeMaterial = new THREE.MeshStandardMaterial({
+            color: color,
+            roughness: 0.7,
+            metalness: 0.1
+        });
+
+        const soleMaterial = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            roughness: 0.9,
+            metalness: 0.1
+        });
+
+        const accentMaterial = new THREE.MeshStandardMaterial({
+            color: 0x333333,
+            roughness: 0.5,
+            metalness: 0.2
+        });
+
+        this.createSneakerPair(shoesGroup, shoeMaterial, soleMaterial, accentMaterial);
+    }
+
+    createSneakerPair(group, shoeMaterial, soleMaterial, accentMaterial) {
+        const sides = [-1, 1];
+
+        sides.forEach(side => {
+            const xOffset = this.config.torsoWidth * 0.25 * side;
+            const yBase = -this.config.legLength;
+            const zBase = this.config.footLength * 0.2;
+
+            const soleGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.52,
+                0.025,
+                this.config.footLength * 1.1
+            );
+            const sole = new THREE.Mesh(soleGeometry, soleMaterial);
+            sole.position.set(xOffset, yBase - 0.055, zBase);
+            sole.castShadow = true;
+            group.add(sole);
+
+            const midsoleGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.5,
+                0.02,
+                this.config.footLength
+            );
+            const midsole = new THREE.Mesh(midsoleGeometry, soleMaterial);
+            midsole.position.set(xOffset, yBase - 0.03, zBase);
+            midsole.castShadow = true;
+            group.add(midsole);
+
+            const upperGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.48,
+                0.07,
+                this.config.footLength * 0.9
+            );
+            const upper = new THREE.Mesh(upperGeometry, shoeMaterial);
+            upper.position.set(xOffset, yBase + 0.01, zBase);
+            upper.castShadow = true;
+            group.add(upper);
+
+            const toeGeometry = new THREE.SphereGeometry(
+                this.config.footLength * 0.24,
+                8, 8, 0, Math.PI
+            );
+            const toe = new THREE.Mesh(toeGeometry, shoeMaterial);
+            toe.position.set(xOffset, yBase + 0.01, zBase + this.config.footLength * 0.45);
+            toe.rotation.x = -Math.PI / 2;
+            toe.castShadow = true;
+            group.add(toe);
+
+            const heelGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.4,
+                0.08,
+                0.06
+            );
+            const heel = new THREE.Mesh(heelGeometry, shoeMaterial);
+            heel.position.set(xOffset, yBase + 0.015, zBase - this.config.footLength * 0.35);
+            heel.castShadow = true;
+            group.add(heel);
+
+            const swooshGeometry = new THREE.BoxGeometry(0.015, 0.04, 0.12);
+            const swoosh = new THREE.Mesh(swooshGeometry, accentMaterial);
+            swoosh.position.set(
+                xOffset + (side * 0.03),
+                yBase + 0.02,
+                zBase + 0.02
+            );
+            swoosh.rotation.z = side * 0.3;
+            group.add(swoosh);
+
+            const tongueGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.25,
+                0.02,
+                0.08
+            );
+            const tongue = new THREE.Mesh(tongueGeometry, shoeMaterial);
+            tongue.position.set(xOffset, yBase + 0.055, zBase + 0.02);
+            tongue.castShadow = true;
+            group.add(tongue);
+        });
+    }
+
+    createLeatherShoeStyle(shoesGroup, color) {
+        const shoeMaterial = new THREE.MeshStandardMaterial({
+            color: color,
+            roughness: 0.35,
+            metalness: 0.4
+        });
+
+        const soleMaterial = new THREE.MeshStandardMaterial({
+            color: 0x2a1a0a,
+            roughness: 0.8,
+            metalness: 0.1
+        });
+
+        this.createLeatherShoePair(shoesGroup, shoeMaterial, soleMaterial);
+    }
+
+    createLeatherShoePair(group, shoeMaterial, soleMaterial) {
+        const sides = [-1, 1];
+
+        sides.forEach(side => {
+            const xOffset = this.config.torsoWidth * 0.25 * side;
+            const yBase = -this.config.legLength;
+            const zBase = this.config.footLength * 0.2;
+
+            const soleGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.48,
+                0.02,
+                this.config.footLength * 0.95
+            );
+            const sole = new THREE.Mesh(soleGeometry, soleMaterial);
+            sole.position.set(xOffset, yBase - 0.045, zBase);
+            sole.castShadow = true;
+            group.add(sole);
+
+            const heelGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.35,
+                0.035,
+                0.08
+            );
+            const heel = new THREE.Mesh(heelGeometry, soleMaterial);
+            heel.position.set(xOffset, yBase - 0.055, zBase - this.config.footLength * 0.3);
+            heel.castShadow = true;
+            group.add(heel);
+
+            const upperGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.46,
+                0.06,
+                this.config.footLength * 0.85
+            );
+            const upper = new THREE.Mesh(upperGeometry, shoeMaterial);
+            upper.position.set(xOffset, yBase - 0.005, zBase);
+            upper.castShadow = true;
+            group.add(upper);
+
+            const toeGeometry = new THREE.SphereGeometry(
+                this.config.footLength * 0.23,
+                8, 8, 0, Math.PI
+            );
+            const toe = new THREE.Mesh(toeGeometry, shoeMaterial);
+            toe.position.set(xOffset, yBase - 0.005, zBase + this.config.footLength * 0.42);
+            toe.rotation.x = -Math.PI / 2;
+            toe.castShadow = true;
+            group.add(toe);
+
+            const vampGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.35,
+                0.02,
+                0.1
+            );
+            const vamp = new THREE.Mesh(vampGeometry, shoeMaterial);
+            vamp.position.set(xOffset, yBase + 0.03, zBase + 0.05);
+            vamp.castShadow = true;
+            group.add(vamp);
+
+            const quarterGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.3,
+                0.05,
+                0.08
+            );
+            const quarter = new THREE.Mesh(quarterGeometry, shoeMaterial);
+            quarter.position.set(xOffset, yBase + 0.01, zBase - this.config.footLength * 0.3);
+            quarter.castShadow = true;
+            group.add(quarter);
+        });
+    }
+
+    createBootsStyle(shoesGroup, color) {
+        const bootMaterial = new THREE.MeshStandardMaterial({
+            color: color,
+            roughness: 0.5,
+            metalness: 0.2
+        });
+
+        const soleMaterial = new THREE.MeshStandardMaterial({
+            color: 0x1a1a1a,
+            roughness: 0.9,
+            metalness: 0.1
+        });
+
+        this.createBootsPair(shoesGroup, bootMaterial, soleMaterial);
+    }
+
+    createBootsPair(group, bootMaterial, soleMaterial) {
+        const sides = [-1, 1];
+
+        sides.forEach(side => {
+            const xOffset = this.config.torsoWidth * 0.25 * side;
+            const yBase = -this.config.legLength;
+            const zBase = this.config.footLength * 0.2;
+
+            const soleGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.55,
+                0.035,
+                this.config.footLength * 1.05
+            );
+            const sole = new THREE.Mesh(soleGeometry, soleMaterial);
+            sole.position.set(xOffset, yBase - 0.06, zBase);
+            sole.castShadow = true;
+            group.add(sole);
+
+            const upperGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.52,
+                0.08,
+                this.config.footLength * 0.95
+            );
+            const upper = new THREE.Mesh(upperGeometry, bootMaterial);
+            upper.position.set(xOffset, yBase - 0.005, zBase);
+            upper.castShadow = true;
+            group.add(upper);
+
+            const shaftGeometry = new THREE.CylinderGeometry(
+                this.config.legRadius * 0.9,
+                this.config.legRadius * 0.95,
+                0.25,
+                8
+            );
+            const shaft = new THREE.Mesh(shaftGeometry, bootMaterial);
+            shaft.position.set(xOffset, yBase + 0.13, zBase);
+            shaft.castShadow = true;
+            group.add(shaft);
+
+            const toeGeometry = new THREE.SphereGeometry(
+                this.config.footLength * 0.26,
+                8, 8, 0, Math.PI
+            );
+            const toe = new THREE.Mesh(toeGeometry, bootMaterial);
+            toe.position.set(xOffset, yBase - 0.005, zBase + this.config.footLength * 0.47);
+            toe.rotation.x = -Math.PI / 2;
+            toe.castShadow = true;
+            group.add(toe);
+
+            const laceGeometry = new THREE.CylinderGeometry(0.006, 0.006, 0.22, 8);
+            const laceMaterial = new THREE.MeshStandardMaterial({
+                color: 0x222222,
+                roughness: 0.6
+            });
+            for (let i = 0; i < 3; i++) {
+                const lace = new THREE.Mesh(laceGeometry, laceMaterial);
+                lace.position.set(
+                    xOffset + (side * 0.02),
+                    yBase + 0.04 + i * 0.06,
+                    zBase + 0.05
+                );
+                lace.rotation.z = side * 0.2;
+                group.add(lace);
+            }
+        });
+    }
+
+    createCasualShoeStyle(shoesGroup, color) {
+        const shoeMaterial = new THREE.MeshStandardMaterial({
+            color: color,
+            roughness: 0.6,
+            metalness: 0.15
+        });
+
+        const soleMaterial = new THREE.MeshStandardMaterial({
+            color: 0x444444,
+            roughness: 0.85,
+            metalness: 0.1
+        });
+
+        this.createCasualShoePair(shoesGroup, shoeMaterial, soleMaterial);
+    }
+
+    createCasualShoePair(group, shoeMaterial, soleMaterial) {
+        const sides = [-1, 1];
+
+        sides.forEach(side => {
+            const xOffset = this.config.torsoWidth * 0.25 * side;
+            const yBase = -this.config.legLength;
+            const zBase = this.config.footLength * 0.2;
+
+            const soleGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.5,
+                0.022,
+                this.config.footLength
+            );
+            const sole = new THREE.Mesh(soleGeometry, soleMaterial);
+            sole.position.set(xOffset, yBase - 0.05, zBase);
+            sole.castShadow = true;
+            group.add(sole);
+
+            const upperGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.48,
+                0.065,
+                this.config.footLength * 0.9
+            );
+            const upper = new THREE.Mesh(upperGeometry, shoeMaterial);
+            upper.position.set(xOffset, yBase - 0.002, zBase);
+            upper.castShadow = true;
+            group.add(upper);
+
+            const toeGeometry = new THREE.SphereGeometry(
+                this.config.footLength * 0.24,
+                8, 8, 0, Math.PI
+            );
+            const toe = new THREE.Mesh(toeGeometry, shoeMaterial);
+            toe.position.set(xOffset, yBase - 0.002, zBase + this.config.footLength * 0.45);
+            toe.rotation.x = -Math.PI / 2;
+            toe.castShadow = true;
+            group.add(toe);
+
+            const sliponGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.3,
+                0.015,
+                0.12
+            );
+            const slipon = new THREE.Mesh(sliponGeometry, shoeMaterial);
+            slipon.position.set(xOffset, yBase + 0.035, zBase);
+            slipon.castShadow = true;
+            group.add(slipon);
+        });
+    }
+
+    createSandalStyle(shoesGroup, color) {
+        const sandalMaterial = new THREE.MeshStandardMaterial({
+            color: color,
+            roughness: 0.4,
+            metalness: 0.2
+        });
+
+        const soleMaterial = new THREE.MeshStandardMaterial({
+            color: 0x5c4033,
+            roughness: 0.7,
+            metalness: 0.1
+        });
+
+        this.createSandalPair(shoesGroup, sandalMaterial, soleMaterial);
+    }
+
+    createSandalPair(group, sandalMaterial, soleMaterial) {
+        const sides = [-1, 1];
+
+        sides.forEach(side => {
+            const xOffset = this.config.torsoWidth * 0.25 * side;
+            const yBase = -this.config.legLength;
+            const zBase = this.config.footLength * 0.2;
+
+            const soleGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.48,
+                0.015,
+                this.config.footLength * 0.95
+            );
+            const sole = new THREE.Mesh(soleGeometry, soleMaterial);
+            sole.position.set(xOffset, yBase - 0.045, zBase);
+            sole.castShadow = true;
+            group.add(sole);
+
+            const toeStrapGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.4,
+                0.012,
+                0.04
+            );
+            const toeStrap = new THREE.Mesh(toeStrapGeometry, sandalMaterial);
+            toeStrap.position.set(xOffset, yBase - 0.035, zBase + this.config.footLength * 0.35);
+            toeStrap.castShadow = true;
+            group.add(toeStrap);
+
+            const midStrapGeometry = new THREE.BoxGeometry(0.012, 0.06, 0.08);
+            const leftMidStrap = new THREE.Mesh(midStrapGeometry, sandalMaterial);
+            leftMidStrap.position.set(
+                xOffset - (side * 0.02),
+                yBase - 0.01,
+                zBase + 0.05
+            );
+            leftMidStrap.castShadow = true;
+            group.add(leftMidStrap);
+
+            const rightMidStrap = new THREE.Mesh(midStrapGeometry, sandalMaterial);
+            rightMidStrap.position.set(
+                xOffset + (side * 0.02),
+                yBase - 0.01,
+                zBase + 0.05
+            );
+            rightMidStrap.castShadow = true;
+            group.add(rightMidStrap);
+
+            const heelStrapGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.3,
+                0.012,
+                0.04
+            );
+            const heelStrap = new THREE.Mesh(heelStrapGeometry, sandalMaterial);
+            heelStrap.position.set(xOffset, yBase - 0.03, zBase - this.config.footLength * 0.3);
+            heelStrap.castShadow = true;
+            group.add(heelStrap);
+
+            const backStrapGeometry = new THREE.BoxGeometry(0.012, 0.05, 0.04);
+            const backStrap = new THREE.Mesh(backStrapGeometry, sandalMaterial);
+            backStrap.position.set(
+                xOffset,
+                yBase - 0.015,
+                zBase - this.config.footLength * 0.3
+            );
+            backStrap.castShadow = true;
+            group.add(backStrap);
+        });
+    }
+
+    createLoaferStyle(shoesGroup, color) {
+        const loaferMaterial = new THREE.MeshStandardMaterial({
+            color: color,
+            roughness: 0.3,
+            metalness: 0.35
+        });
+
+        const soleMaterial = new THREE.MeshStandardMaterial({
+            color: 0x1a1a1a,
+            roughness: 0.8,
+            metalness: 0.1
+        });
+
+        this.createLoaferPair(shoesGroup, loaferMaterial, soleMaterial);
+    }
+
+    createLoaferPair(group, loaferMaterial, soleMaterial) {
+        const sides = [-1, 1];
+
+        sides.forEach(side => {
+            const xOffset = this.config.torsoWidth * 0.25 * side;
+            const yBase = -this.config.legLength;
+            const zBase = this.config.footLength * 0.2;
+
+            const soleGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.47,
+                0.018,
+                this.config.footLength * 0.92
+            );
+            const sole = new THREE.Mesh(soleGeometry, soleMaterial);
+            sole.position.set(xOffset, yBase - 0.042, zBase);
+            sole.castShadow = true;
+            group.add(sole);
+
+            const upperGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.45,
+                0.055,
+                this.config.footLength * 0.85
+            );
+            const upper = new THREE.Mesh(upperGeometry, loaferMaterial);
+            upper.position.set(xOffset, yBase - 0.008, zBase);
+            upper.castShadow = true;
+            group.add(upper);
+
+            const toeGeometry = new THREE.SphereGeometry(
+                this.config.footLength * 0.225,
+                8, 8, 0, Math.PI
+            );
+            const toe = new THREE.Mesh(toeGeometry, loaferMaterial);
+            toe.position.set(xOffset, yBase - 0.008, zBase + this.config.footLength * 0.42);
+            toe.rotation.x = -Math.PI / 2;
+            toe.castShadow = true;
+            group.add(toe);
+
+            const saddleGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.28,
+                0.015,
+                0.1
+            );
+            const saddleMaterial = new THREE.MeshStandardMaterial({
+                color: loaferMaterial.color.clone().multiplyScalar(0.85),
+                roughness: loaferMaterial.roughness,
+                metalness: loaferMaterial.metalness
+            });
+            const saddle = new THREE.Mesh(saddleGeometry, saddleMaterial);
+            saddle.position.set(xOffset, yBase + 0.022, zBase - 0.02);
+            saddle.castShadow = true;
+            group.add(saddle);
+
+            const pennySlotGeometry = new THREE.BoxGeometry(0.06, 0.008, 0.035);
+            const pennySlot = new THREE.Mesh(pennySlotGeometry, saddleMaterial);
+            pennySlot.position.set(xOffset, yBase + 0.028, zBase - 0.02);
+            group.add(pennySlot);
+        });
+    }
+
+    createCanvasShoeStyle(shoesGroup, color) {
+        const canvasMaterial = new THREE.MeshStandardMaterial({
+            color: color,
+            roughness: 0.75,
+            metalness: 0.05
+        });
+
+        const soleMaterial = new THREE.MeshStandardMaterial({
+            color: 0xf5f5f5,
+            roughness: 0.9,
+            metalness: 0.05
+        });
+
+        const rubberMaterial = new THREE.MeshStandardMaterial({
+            color: 0xcc4444,
+            roughness: 0.7,
+            metalness: 0.1
+        });
+
+        this.createCanvasShoePair(shoesGroup, canvasMaterial, soleMaterial, rubberMaterial);
+    }
+
+    createCanvasShoePair(group, canvasMaterial, soleMaterial, rubberMaterial) {
+        const sides = [-1, 1];
+
+        sides.forEach(side => {
+            const xOffset = this.config.torsoWidth * 0.25 * side;
+            const yBase = -this.config.legLength;
+            const zBase = this.config.footLength * 0.2;
+
+            const soleGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.51,
+                0.028,
+                this.config.footLength * 1.02
+            );
+            const sole = new THREE.Mesh(soleGeometry, soleMaterial);
+            sole.position.set(xOffset, yBase - 0.058, zBase);
+            sole.castShadow = true;
+            group.add(sole);
+
+            const upperGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.49,
+                0.075,
+                this.config.footLength * 0.95
+            );
+            const upper = new THREE.Mesh(upperGeometry, canvasMaterial);
+            upper.position.set(xOffset, yBase, zBase);
+            upper.castShadow = true;
+            group.add(upper);
+
+            const toeGeometry = new THREE.SphereGeometry(
+                this.config.footLength * 0.245,
+                8, 8, 0, Math.PI
+            );
+            const toe = new THREE.Mesh(toeGeometry, canvasMaterial);
+            toe.position.set(xOffset, yBase, zBase + this.config.footLength * 0.47);
+            toe.rotation.x = -Math.PI / 2;
+            toe.castShadow = true;
+            group.add(toe);
+
+            const toeCapGeometry = new THREE.SphereGeometry(
+                this.config.footLength * 0.25,
+                8, 4, 0, Math.PI, Math.PI / 2, Math.PI / 2
+            );
+            const toeCap = new THREE.Mesh(toeCapGeometry, rubberMaterial);
+            toeCap.position.set(xOffset, yBase - 0.02, zBase + this.config.footLength * 0.47);
+            toeCap.rotation.x = -Math.PI / 2;
+            group.add(toeCap);
+
+            const tongueGeometry = new THREE.BoxGeometry(
+                this.config.footLength * 0.28,
+                0.018,
+                0.09
+            );
+            const tongue = new THREE.Mesh(tongueGeometry, canvasMaterial);
+            tongue.position.set(xOffset, yBase + 0.05, zBase + 0.03);
+            tongue.castShadow = true;
+            group.add(tongue);
+
+            const laceGeometry = new THREE.CylinderGeometry(0.005, 0.005, 0.18, 6);
+            const laceMaterial = new THREE.MeshStandardMaterial({
+                color: 0xffffff,
+                roughness: 0.6
+            });
+            for (let i = 0; i < 4; i++) {
+                const lace = new THREE.Mesh(laceGeometry, laceMaterial);
+                lace.position.set(
+                    xOffset + (side * 0.015),
+                    yBase + 0.045 + i * 0.04,
+                    zBase + 0.04
+                );
+                lace.rotation.z = side * 0.15;
+                group.add(lace);
+            }
+        });
+    }
+
     createHat(style, color) {
+        this.currentStyles.hat = style;
         if (this.clothing.hat) {
             this.headJoint.remove(this.clothing.hat);
         }
@@ -595,6 +1610,7 @@ export class Character {
     }
 
     createGlasses(style, color) {
+        this.currentStyles.glasses = style;
         if (this.clothing.glasses) {
             this.headJoint.remove(this.clothing.glasses);
         }
@@ -717,12 +1733,7 @@ export class Character {
     }
 
     getCurrentStyle(category) {
-        if (category === 'hat' && this.clothing.hat) return 'baseball';
-        if (category === 'glasses' && this.clothing.glasses) return 'round';
-        if (category === 'top' && this.clothing.top) return 'tshirt';
-        if (category === 'pants' && this.clothing.pants) return 'jeans';
-        if (category === 'shoes' && this.clothing.shoes) return 'sneaker';
-        return 'none';
+        return this.currentStyles[category] || 'none';
     }
 
     update(delta) {
