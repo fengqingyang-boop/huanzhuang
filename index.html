@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D换装小游戏 | 3D Dress Up Game</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div id="game-container">
+        <header id="game-header">
+            <h1 id="game-title">3D 换装小游戏</h1>
+            <div id="language-selector">
+                <button class="lang-btn active" data-lang="zh">中文</button>
+                <button class="lang-btn" data-lang="en">English</button>
+                <button class="lang-btn" data-lang="ja">日本語</button>
+                <button class="lang-btn" data-lang="ko">한국어</button>
+            </div>
+        </header>
+
+        <main id="game-main">
+            <section id="character-section">
+                <div id="character-viewer">
+                    <canvas id="three-canvas"></canvas>
+                    <div id="rotation-hint" class="hint-text">拖动旋转角色 | Drag to rotate</div>
+                </div>
+                <div id="character-info">
+                    <p id="character-name">时尚达人</p>
+                </div>
+            </section>
+
+            <section id="wardrobe-section">
+                <div id="wardrobe-tabs">
+                    <button class="tab-btn active" data-category="hat" data-i18n="tabs.hat">帽子</button>
+                    <button class="tab-btn" data-category="glasses" data-i18n="tabs.glasses">眼镜</button>
+                    <button class="tab-btn" data-category="top" data-i18n="tabs.top">上衣</button>
+                    <button class="tab-btn" data-category="pants" data-i18n="tabs.pants">裤子</button>
+                    <button class="tab-btn" data-category="shoes" data-i18n="tabs.shoes">鞋子</button>
+                </div>
+
+                <div id="wardrobe-content">
+                    <div id="style-selector" class="selector-panel">
+                        <h3 data-i18n="panel.style">款式选择</h3>
+                        <div id="style-options" class="options-grid"></div>
+                    </div>
+
+                    <div id="color-selector" class="selector-panel">
+                        <h3 data-i18n="panel.color">颜色选择</h3>
+                        <div id="color-options" class="options-grid"></div>
+                    </div>
+
+                    <div id="action-buttons">
+                        <button id="reset-btn" data-i18n="actions.reset">重置搭配</button>
+                        <button id="random-btn" data-i18n="actions.random">随机搭配</button>
+                        <button id="confirm-btn" class="primary-btn" data-i18n="actions.confirm">搭配完毕</button>
+                    </div>
+                </div>
+
+                <div id="video-section">
+                    <h3 data-i18n="panel.video">时尚视频</h3>
+                    <div id="video-gallery">
+                        <div class="video-thumbnail">
+                            <div class="video-placeholder">
+                                <span>🎬</span>
+                                <p data-i18n="video.fashion">时尚搭配技巧</p>
+                            </div>
+                        </div>
+                        <div class="video-thumbnail">
+                            <div class="video-placeholder">
+                                <span>📺</span>
+                                <p data-i18n="video.trends">最新潮流趋势</p>
+                            </div>
+                        </div>
+                        <div class="video-thumbnail">
+                            <div class="video-placeholder">
+                                <span>👔</span>
+                                <p data-i18n="video.color">色彩搭配指南</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div id="score-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2 data-i18n="score.title">搭配评分</h2>
+                <div id="score-display">
+                    <div id="score-circle">
+                        <span id="score-value">85</span>
+                    </div>
+                    <p id="score-rating" data-i18n="score.great">非常棒！</p>
+                </div>
+                <div id="score-details">
+                    <div class="score-item">
+                        <span data-i18n="score.style">款式搭配：</span>
+                        <span class="score-points" id="style-score">25/30</span>
+                    </div>
+                    <div class="score-item">
+                        <span data-i18n="score.color">色彩协调：</span>
+                        <span class="score-points" id="color-score">30/35</span>
+                    </div>
+                    <div class="score-item">
+                        <span data-i18n="score.trend">时尚度：</span>
+                        <span class="score-points" id="trend-score">20/20</span>
+                    </div>
+                    <div class="score-item">
+                        <span data-i18n="score.overall">整体效果：</span>
+                        <span class="score-points" id="overall-score">10/15</span>
+                    </div>
+                </div>
+                <div id="score-comments">
+                    <p data-i18n="score.comment">你的搭配非常时尚，色彩搭配很协调！</p>
+                </div>
+                <div class="modal-buttons">
+                    <button id="close-modal-btn" data-i18n="actions.close">关闭</button>
+                    <button id="share-btn" data-i18n="actions.share">分享</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading-screen" class="loading">
+            <div class="loader"></div>
+            <p data-i18n="loading">加载中...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { Game } from './js/main.js';
+        document.addEventListener('DOMContentLoaded', () => {
+            window.game = new Game();
+            window.game.init();
+        });
+    </script>
+</body>
+</html>
