@@ -861,15 +861,55 @@ export class Character {
             return;
         }
 
+        let pantsGroup = new THREE.Group();
+
+        switch (style) {
+            case 'jeans':
+                this.createJeansStyle(pantsGroup, color);
+                break;
+            case 'chino':
+                this.createChinoStyle(pantsGroup, color);
+                break;
+            case 'suit':
+                this.createSuitPantsStyle(pantsGroup, color);
+                break;
+            case 'shorts':
+                this.createShortsStyle(pantsGroup, color);
+                break;
+            case 'sweat':
+                this.createSweatPantsStyle(pantsGroup, color);
+                break;
+            case 'cargo':
+                this.createCargoPantsStyle(pantsGroup, color);
+                break;
+            case 'linen':
+                this.createLinenPantsStyle(pantsGroup, color);
+                break;
+            default:
+                this.createJeansStyle(pantsGroup, color);
+                break;
+        }
+
+        this.clothing.pants = pantsGroup;
+        this.clothingColors.pants = color;
+        this.hipJoint.add(pantsGroup);
+    }
+
+    createJeansStyle(pantsGroup, color) {
         const clothingOffset = MODEL_CONFIGS.clothing.offset;
         const material = new THREE.MeshStandardMaterial({
             color: color,
-            roughness: style === 'jeans' ? 0.9 : 0.8,
+            roughness: 0.9,
             metalness: 0.1
         });
 
-        let pantsGroup = new THREE.Group();
-        const pantLength = (style === 'shorts') ? this.config.legLength * 0.4 : this.config.legLength * 0.85;
+        const stitchMaterial = new THREE.MeshStandardMaterial({
+            color: 0x8B7355,
+            roughness: 0.7,
+            metalness: 0.1
+        });
+
+        const pantLength = this.config.legLength * 0.85;
 
         const waistGeometry = new THREE.CylinderGeometry(
             this.config.torsoWidth * 0.48,
@@ -882,6 +922,542 @@ export class Character {
         waist.castShadow = true;
         pantsGroup.add(waist);
 
+        const beltLoopGeometry = new THREE.BoxGeometry(0.02, 0.04, 0.012);
+        for (let i = 0; i < 6; i++) {
+            const angle = (i / 6) * Math.PI * 2;
+            const loop = new THREE.Mesh(beltLoopGeometry, stitchMaterial);
+            loop.position.set(
+                Math.sin(angle) * this.config.torsoWidth * 0.49,
+                this.config.torsoHeight * 0.05 + 0.01,
+                Math.cos(angle) * this.config.torsoWidth * 0.49
+            );
+            loop.rotation.y = angle;
+            loop.castShadow = true;
+            pantsGroup.add(loop);
+        }
+
+        const legGeometry = new THREE.CylinderGeometry(
+            this.config.legRadius + clothingOffset * 1.5,
+            (this.config.legRadius + clothingOffset * 1.5) * 0.85,
+            pantLength * 0.9,
+            8
+        );
+
+        const sides = [-1, 1];
+        sides.forEach(side => {
+            const xOffset = this.config.torsoWidth * 0.25 * side;
+            const yBase = -pantLength * 0.45;
+
+            const leg = new THREE.Mesh(legGeometry, material);
+            leg.position.set(xOffset, yBase, 0);
+            leg.castShadow = true;
+            pantsGroup.add(leg);
+
+            const stitchGeometry = new THREE.BoxGeometry(0.008, pantLength * 0.9, 0.008);
+            const outerStitch = new THREE.Mesh(stitchGeometry, stitchMaterial);
+            outerStitch.position.set(
+                xOffset + (side * 0.03),
+                yBase,
+                0
+            );
+            outerStitch.castShadow = true;
+            pantsGroup.add(outerStitch);
+
+            const innerStitch = new THREE.Mesh(stitchGeometry, stitchMaterial);
+            innerStitch.position.set(
+                xOffset - (side * 0.01),
+                yBase,
+                0
+            );
+            innerStitch.castShadow = true;
+            pantsGroup.add(innerStitch);
+
+            const pocketGeometry = new THREE.BoxGeometry(0.05, 0.08, 0.015);
+            const frontPocket = new THREE.Mesh(pocketGeometry, material);
+            frontPocket.position.set(
+                xOffset + (side * 0.015),
+                this.config.torsoHeight * 0.05 - 0.06,
+                0.02
+            );
+            frontPocket.castShadow = true;
+            pantsGroup.add(frontPocket);
+
+            const backPocketGeometry = new THREE.BoxGeometry(0.045, 0.07, 0.012);
+            const backPocket = new THREE.Mesh(backPocketGeometry, material);
+            backPocket.position.set(
+                xOffset,
+                this.config.torsoHeight * 0.05 - 0.05,
+                -0.025
+            );
+            backPocket.castShadow = true;
+            pantsGroup.add(backPocket);
+        });
+
+        const flyGeometry = new THREE.BoxGeometry(0.03, 0.12, 0.01);
+        const fly = new THREE.Mesh(flyGeometry, material);
+        fly.position.set(0, this.config.torsoHeight * 0.05 - 0.04, 0.025);
+        fly.castShadow = true;
+        pantsGroup.add(fly);
+    }
+
+    createChinoStyle(pantsGroup, color) {
+        const clothingOffset = MODEL_CONFIGS.clothing.offset;
+        const material = new THREE.MeshStandardMaterial({
+            color: color,
+            roughness: 0.7,
+            metalness: 0.15
+        });
+
+        const pantLength = this.config.legLength * 0.85;
+
+        const waistGeometry = new THREE.CylinderGeometry(
+            this.config.torsoWidth * 0.46,
+            this.config.torsoWidth * 0.48,
+            0.045,
+            16
+        );
+        const waist = new THREE.Mesh(waistGeometry, material);
+        waist.position.y = this.config.torsoHeight * 0.05;
+        waist.castShadow = true;
+        pantsGroup.add(waist);
+
+        const legGeometry = new THREE.CylinderGeometry(
+            this.config.legRadius + clothingOffset * 1.3,
+            (this.config.legRadius + clothingOffset * 1.3) * 0.9,
+            pantLength * 0.9,
+            8
+        );
+
+        const sides = [-1, 1];
+        sides.forEach(side => {
+            const xOffset = this.config.torsoWidth * 0.25 * side;
+            const yBase = -pantLength * 0.45;
+
+            const leg = new THREE.Mesh(legGeometry, material);
+            leg.position.set(xOffset, yBase, 0);
+            leg.castShadow = true;
+            pantsGroup.add(leg);
+
+            const sidePocketGeometry = new THREE.BoxGeometry(0.015, 0.1, 0.04);
+            const sidePocket = new THREE.Mesh(sidePocketGeometry, material);
+            sidePocket.position.set(
+                xOffset + (side * 0.02),
+                this.config.torsoHeight * 0.05 - 0.07,
+                0
+            );
+            sidePocket.rotation.z = side * 0.1;
+            sidePocket.castShadow = true;
+            pantsGroup.add(sidePocket);
+
+            const cuffGeometry = new THREE.BoxGeometry(
+                (this.config.legRadius + clothingOffset * 1.3) * 1.8,
+                0.015,
+                (this.config.legRadius + clothingOffset * 1.3) * 1.8
+            );
+            const cuff = new THREE.Mesh(cuffGeometry, material);
+            cuff.position.set(
+                xOffset,
+                -pantLength * 0.9 + 0.01,
+                0
+            );
+            cuff.castShadow = true;
+            pantsGroup.add(cuff);
+        });
+    }
+
+    createSuitPantsStyle(pantsGroup, color) {
+        const clothingOffset = MODEL_CONFIGS.clothing.offset;
+        const material = new THREE.MeshStandardMaterial({
+            color: color,
+            roughness: 0.4,
+            metalness: 0.3
+        });
+
+        const pantLength = this.config.legLength * 0.88;
+
+        const waistGeometry = new THREE.CylinderGeometry(
+            this.config.torsoWidth * 0.44,
+            this.config.torsoWidth * 0.46,
+            0.04,
+            16
+        );
+        const waist = new THREE.Mesh(waistGeometry, material);
+        waist.position.y = this.config.torsoHeight * 0.05;
+        waist.castShadow = true;
+        pantsGroup.add(waist);
+
+        const legGeometry = new THREE.CylinderGeometry(
+            this.config.legRadius + clothingOffset * 1.2,
+            (this.config.legRadius + clothingOffset * 1.2) * 0.8,
+            pantLength * 0.9,
+            8
+        );
+
+        const creaseMaterial = new THREE.MeshStandardMaterial({
+            color: new THREE.Color(color).multiplyScalar(0.7),
+            roughness: 0.4,
+            metalness: 0.3
+        });
+
+        const sides = [-1, 1];
+        sides.forEach(side => {
+            const xOffset = this.config.torsoWidth * 0.25 * side;
+            const yBase = -pantLength * 0.45;
+
+            const leg = new THREE.Mesh(legGeometry, material);
+            leg.position.set(xOffset, yBase, 0);
+            leg.castShadow = true;
+            pantsGroup.add(leg);
+
+            const creaseGeometry = new THREE.BoxGeometry(0.005, pantLength * 0.85, 0.035);
+            const frontCrease = new THREE.Mesh(creaseGeometry, creaseMaterial);
+            frontCrease.position.set(
+                xOffset,
+                yBase,
+                this.config.legRadius + clothingOffset * 1.1
+            );
+            frontCrease.castShadow = true;
+            pantsGroup.add(frontCrease);
+
+            const backCrease = new THREE.Mesh(creaseGeometry, creaseMaterial);
+            backCrease.position.set(
+                xOffset,
+                yBase,
+                -(this.config.legRadius + clothingOffset * 1.1)
+            );
+            backCrease.castShadow = true;
+            pantsGroup.add(backCrease);
+        });
+
+        const tabGeometry = new THREE.BoxGeometry(0.04, 0.025, 0.012);
+        const tab = new THREE.Mesh(tabGeometry, material);
+        tab.position.set(0, this.config.torsoHeight * 0.05 - 0.01, 0.02);
+        tab.castShadow = true;
+        pantsGroup.add(tab);
+    }
+
+    createShortsStyle(pantsGroup, color) {
+        const clothingOffset = MODEL_CONFIGS.clothing.offset;
+        const material = new THREE.MeshStandardMaterial({
+            color: color,
+            roughness: 0.75,
+            metalness: 0.1
+        });
+
+        const pantLength = this.config.legLength * 0.35;
+
+        const waistGeometry = new THREE.CylinderGeometry(
+            this.config.torsoWidth * 0.47,
+            this.config.torsoWidth * 0.49,
+            0.045,
+            16
+        );
+        const waist = new THREE.Mesh(waistGeometry, material);
+        waist.position.y = this.config.torsoHeight * 0.05;
+        waist.castShadow = true;
+        pantsGroup.add(waist);
+
+        const drawstringMaterial = new THREE.MeshStandardMaterial({
+            color: 0x222222,
+            roughness: 0.6,
+            metalness: 0.1
+        });
+
+        const drawstringGeometry = new THREE.CylinderGeometry(0.004, 0.004, 0.06, 6);
+        for (let i = 0; i < 2; i++) {
+            const drawstring = new THREE.Mesh(drawstringGeometry, drawstringMaterial);
+            drawstring.position.set(
+                -0.015 + i * 0.03,
+                this.config.torsoHeight * 0.05 - 0.06,
+                0.02
+            );
+            drawstring.castShadow = true;
+            pantsGroup.add(drawstring);
+        }
+
+        const legGeometry = new THREE.CylinderGeometry(
+            this.config.legRadius + clothingOffset * 1.6,
+            (this.config.legRadius + clothingOffset * 1.6) * 0.95,
+            pantLength * 0.9,
+            8
+        );
+
+        const sides = [-1, 1];
+        sides.forEach(side => {
+            const xOffset = this.config.torsoWidth * 0.25 * side;
+            const yBase = -pantLength * 0.45;
+
+            const leg = new THREE.Mesh(legGeometry, material);
+            leg.position.set(xOffset, yBase, 0);
+            leg.castShadow = true;
+            pantsGroup.add(leg);
+
+            const pocketGeometry = new THREE.BoxGeometry(0.055, 0.06, 0.018);
+            const sidePocket = new THREE.Mesh(pocketGeometry, material);
+            sidePocket.position.set(
+                xOffset + (side * 0.015),
+                this.config.torsoHeight * 0.05 - 0.06,
+                0.02
+            );
+            sidePocket.castShadow = true;
+            pantsGroup.add(sidePocket);
+
+            const hemGeometry = new THREE.BoxGeometry(
+                (this.config.legRadius + clothingOffset * 1.6) * 1.9,
+                0.012,
+                (this.config.legRadius + clothingOffset * 1.6) * 1.9
+            );
+            const hem = new THREE.Mesh(hemGeometry, material);
+            hem.position.set(
+                xOffset,
+                -pantLength * 0.9 + 0.008,
+                0
+            );
+            hem.castShadow = true;
+            pantsGroup.add(hem);
+        });
+    }
+
+    createSweatPantsStyle(pantsGroup, color) {
+        const clothingOffset = MODEL_CONFIGS.clothing.offset;
+        const material = new THREE.MeshStandardMaterial({
+            color: color,
+            roughness: 0.85,
+            metalness: 0.05
+        });
+
+        const ribMaterial = new THREE.MeshStandardMaterial({
+            color: new THREE.Color(color).multiplyScalar(0.85),
+            roughness: 0.85,
+            metalness: 0.05
+        });
+
+        const pantLength = this.config.legLength * 0.82;
+
+        const waistGeometry = new THREE.CylinderGeometry(
+            this.config.torsoWidth * 0.47,
+            this.config.torsoWidth * 0.49,
+            0.06,
+            16
+        );
+        const waist = new THREE.Mesh(waistGeometry, ribMaterial);
+        waist.position.y = this.config.torsoHeight * 0.05;
+        waist.castShadow = true;
+        pantsGroup.add(waist);
+
+        const drawstringMaterial = new THREE.MeshStandardMaterial({
+            color: 0x333333,
+            roughness: 0.6,
+            metalness: 0.1
+        });
+
+        const drawstringGeometry = new THREE.CylinderGeometry(0.005, 0.005, 0.08, 6);
+        for (let i = 0; i < 2; i++) {
+            const drawstring = new THREE.Mesh(drawstringGeometry, drawstringMaterial);
+            drawstring.position.set(
+                -0.015 + i * 0.03,
+                this.config.torsoHeight * 0.05 - 0.07,
+                0.02
+            );
+            drawstring.castShadow = true;
+            pantsGroup.add(drawstring);
+        }
+
+        const legGeometry = new THREE.CylinderGeometry(
+            this.config.legRadius + clothingOffset * 1.8,
+            (this.config.legRadius + clothingOffset * 1.8) * 0.8,
+            pantLength * 0.85,
+            8
+        );
+
+        const sides = [-1, 1];
+        sides.forEach(side => {
+            const xOffset = this.config.torsoWidth * 0.25 * side;
+            const yBase = -pantLength * 0.425;
+
+            const leg = new THREE.Mesh(legGeometry, material);
+            leg.position.set(xOffset, yBase, 0);
+            leg.castShadow = true;
+            pantsGroup.add(leg);
+
+            const ankleGeometry = new THREE.CylinderGeometry(
+                this.config.legRadius + clothingOffset * 0.8,
+                this.config.legRadius + clothingOffset * 0.8,
+                0.05,
+                8
+            );
+            const ankle = new THREE.Mesh(ankleGeometry, ribMaterial);
+            ankle.position.set(
+                xOffset,
+                -pantLength * 0.85,
+                0
+            );
+            ankle.castShadow = true;
+            pantsGroup.add(ankle);
+
+            const pocketGeometry = new THREE.BoxGeometry(0.06, 0.12, 0.02);
+            const sidePocket = new THREE.Mesh(pocketGeometry, material);
+            sidePocket.position.set(
+                xOffset + (side * 0.02),
+                this.config.torsoHeight * 0.05 - 0.1,
+                0.015
+            );
+            sidePocket.castShadow = true;
+            pantsGroup.add(sidePocket);
+        });
+
+        const kneeGeometry = new THREE.BoxGeometry(0.015, 0.04, 0.05);
+        sides.forEach(side => {
+            const knee = new THREE.Mesh(kneeGeometry, ribMaterial);
+            knee.position.set(
+                this.config.torsoWidth * 0.25 * side,
+                -pantLength * 0.5,
+                0
+            );
+            knee.castShadow = true;
+            pantsGroup.add(knee);
+        });
+    }
+
+    createCargoPantsStyle(pantsGroup, color) {
+        const clothingOffset = MODEL_CONFIGS.clothing.offset;
+        const material = new THREE.MeshStandardMaterial({
+            color: color,
+            roughness: 0.8,
+            metalness: 0.1
+        });
+
+        const pantLength = this.config.legLength * 0.83;
+
+        const waistGeometry = new THREE.CylinderGeometry(
+            this.config.torsoWidth * 0.48,
+            this.config.torsoWidth * 0.5,
+            0.05,
+            16
+        );
+        const waist = new THREE.Mesh(waistGeometry, material);
+        waist.position.y = this.config.torsoHeight * 0.05;
+        waist.castShadow = true;
+        pantsGroup.add(waist);
+
+        const beltLoopGeometry = new THREE.BoxGeometry(0.025, 0.045, 0.015);
+        for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
+            const loop = new THREE.Mesh(beltLoopGeometry, material);
+            loop.position.set(
+                Math.sin(angle) * this.config.torsoWidth * 0.49,
+                this.config.torsoHeight * 0.05 + 0.01,
+                Math.cos(angle) * this.config.torsoWidth * 0.49
+            );
+            loop.rotation.y = angle;
+            loop.castShadow = true;
+            pantsGroup.add(loop);
+        }
+
+        const legGeometry = new THREE.CylinderGeometry(
+            this.config.legRadius + clothingOffset * 1.7,
+            (this.config.legRadius + clothingOffset * 1.7) * 0.95,
+            pantLength * 0.9,
+            8
+        );
+
+        const sides = [-1, 1];
+        sides.forEach(side => {
+            const xOffset = this.config.torsoWidth * 0.25 * side;
+            const yBase = -pantLength * 0.45;
+
+            const leg = new THREE.Mesh(legGeometry, material);
+            leg.position.set(xOffset, yBase, 0);
+            leg.castShadow = true;
+            pantsGroup.add(leg);
+
+            const cargoPocketGeometry = new THREE.BoxGeometry(0.07, 0.14, 0.035);
+            const cargoPocket = new THREE.Mesh(cargoPocketGeometry, material);
+            cargoPocket.position.set(
+                xOffset,
+                -pantLength * 0.45,
+                -(this.config.legRadius + clothingOffset * 1.7) - 0.015
+            );
+            cargoPocket.castShadow = true;
+            pantsGroup.add(cargoPocket);
+
+            const pocketFlapGeometry = new THREE.BoxGeometry(0.075, 0.008, 0.04);
+            const pocketFlap = new THREE.Mesh(pocketFlapGeometry, material);
+            pocketFlap.position.set(
+                xOffset,
+                -pantLength * 0.45 + 0.06,
+                -(this.config.legRadius + clothingOffset * 1.7) - 0.03
+            );
+            pocketFlap.rotation.x = -0.3;
+            pocketFlap.castShadow = true;
+            pantsGroup.add(pocketFlap);
+
+            const buttonGeometry = new THREE.CylinderGeometry(0.006, 0.006, 0.006, 8);
+            const buttonMaterial = new THREE.MeshStandardMaterial({
+                color: 0x333333,
+                roughness: 0.5,
+                metalness: 0.3
+            });
+            const button = new THREE.Mesh(buttonGeometry, buttonMaterial);
+            button.position.set(
+                xOffset,
+                -pantLength * 0.45 + 0.04,
+                -(this.config.legRadius + clothingOffset * 1.7) - 0.04
+            );
+            button.rotation.x = Math.PI / 2;
+            pantsGroup.add(button);
+
+            const frontPocketGeometry = new THREE.BoxGeometry(0.055, 0.08, 0.018);
+            const frontPocket = new THREE.Mesh(frontPocketGeometry, material);
+            frontPocket.position.set(
+                xOffset + (side * 0.015),
+                this.config.torsoHeight * 0.05 - 0.06,
+                0.02
+            );
+            frontPocket.castShadow = true;
+            pantsGroup.add(frontPocket);
+        });
+    }
+
+    createLinenPantsStyle(pantsGroup, color) {
+        const clothingOffset = MODEL_CONFIGS.clothing.offset;
+        const material = new THREE.MeshStandardMaterial({
+            color: color,
+            roughness: 0.6,
+            metalness: 0.08
+        });
+
+        const pantLength = this.config.legLength * 0.86;
+
+        const waistGeometry = new THREE.CylinderGeometry(
+            this.config.torsoWidth * 0.45,
+            this.config.torsoWidth * 0.47,
+            0.04,
+            16
+        );
+        const waist = new THREE.Mesh(waistGeometry, material);
+        waist.position.y = this.config.torsoHeight * 0.05;
+        waist.castShadow = true;
+        pantsGroup.add(waist);
+
+        const drawstringGeometry = new THREE.CylinderGeometry(0.004, 0.004, 0.07, 6);
+        const drawstringMaterial = new THREE.MeshStandardMaterial({
+            color: new THREE.Color(color).multiplyScalar(0.7),
+            roughness: 0.6,
+            metalness: 0.1
+        });
+
+        for (let i = 0; i < 2; i++) {
+            const drawstring = new THREE.Mesh(drawstringGeometry, drawstringMaterial);
+            drawstring.position.set(
+                -0.012 + i * 0.024,
+                this.config.torsoHeight * 0.05 - 0.06,
+                0.02
+            );
+            drawstring.castShadow = true;
+            pantsGroup.add(drawstring);
+        }
+
         const legGeometry = new THREE.CylinderGeometry(
             this.config.legRadius + clothingOffset * 1.5,
             (this.config.legRadius + clothingOffset * 1.5) * 0.9,
@@ -889,19 +1465,45 @@ export class Character {
             8
         );
 
-        const leftLeg = new THREE.Mesh(legGeometry, material);
-        leftLeg.position.set(-this.config.torsoWidth * 0.25, -pantLength * 0.45, 0);
-        leftLeg.castShadow = true;
-        pantsGroup.add(leftLeg);
+        const sides = [-1, 1];
+        sides.forEach(side => {
+            const xOffset = this.config.torsoWidth * 0.25 * side;
+            const yBase = -pantLength * 0.45;
 
-        const rightLeg = new THREE.Mesh(legGeometry, material);
-        rightLeg.position.set(this.config.torsoWidth * 0.25, -pantLength * 0.45, 0);
-        rightLeg.castShadow = true;
-        pantsGroup.add(rightLeg);
+            const leg = new THREE.Mesh(legGeometry, material);
+            leg.position.set(xOffset, yBase, 0);
+            leg.castShadow = true;
+            pantsGroup.add(leg);
 
-        this.clothing.pants = pantsGroup;
-        this.clothingColors.pants = color;
-        this.hipJoint.add(pantsGroup);
+            const sideSeamGeometry = new THREE.BoxGeometry(0.006, pantLength * 0.85, 0.006);
+            const seamMaterial = new THREE.MeshStandardMaterial({
+                color: new THREE.Color(color).multiplyScalar(0.9),
+                roughness: 0.6,
+                metalness: 0.08
+            });
+            const outerSeam = new THREE.Mesh(sideSeamGeometry, seamMaterial);
+            outerSeam.position.set(
+                xOffset + (side * 0.025),
+                yBase,
+                0
+            );
+            outerSeam.castShadow = true;
+            pantsGroup.add(outerSeam);
+
+            const cuffGeometry = new THREE.BoxGeometry(
+                (this.config.legRadius + clothingOffset * 1.5) * 1.85,
+                0.01,
+                (this.config.legRadius + clothingOffset * 1.5) * 1.85
+            );
+            const cuff = new THREE.Mesh(cuffGeometry, seamMaterial);
+            cuff.position.set(
+                xOffset,
+                -pantLength * 0.9 + 0.005,
+                0
+            );
+            cuff.castShadow = true;
+            pantsGroup.add(cuff);
+        });
     }
 
     createShoes(style, color) {
